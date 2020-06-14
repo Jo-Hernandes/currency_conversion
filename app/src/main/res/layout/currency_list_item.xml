@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="inputValue"
+            type="Double" />
+
+        <variable
+            name="isSelected"
+            type="Boolean" />
+
+        <variable
+            name="currency"
+            type="com.example.exchangeratesapp.models.ExchangeCurrency" />
+    </data>
+
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="170dp"
+        android:layout_margin="5dp"
+        app:cardBackgroundColor="@{isSelected ? @android:color/holo_red_dark : @android:color/white}"
+        app:cardCornerRadius="5dp"
+        app:cardPreventCornerOverlap="true"
+        app:cardUseCompatPadding="true"
+        app:contentPadding="2dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/white"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="10dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@{currency.name}"
+                android:textAlignment="center"
+                tools:text="USD" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="5dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@{`Rate: ` + currency.rate}"
+                tools:text="Rate: 1.02" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@{`Total: ` + (currency.rate * inputValue)}"
+                tools:text="Total: 1.02" />
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+</layout>

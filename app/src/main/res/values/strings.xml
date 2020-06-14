@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Exchange Rates App</string>
+    <string name="retry">Retry</string>
+    <string name="fetch_exception">An error occurred while obtaining data</string>
+    <string name="offline_exception">Offline network. Try again later</string>
+    <string name="no_host">Could not resolve host</string>
+    <string name="loading">Loading...</string>
+</resources>

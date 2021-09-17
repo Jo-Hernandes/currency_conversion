@@ -13,4 +13,8 @@ sealed class ConnectionException(@StringRes val message: Int, val retry: () -> U
 
     class NoHostException(retry: () -> Unit) :
         ConnectionException(R.string.no_host, retry)
+
+    class RatesNotLoaded(retry: () -> Unit) :
+            ConnectionException(R.string.no_rates, retry)
+
 }

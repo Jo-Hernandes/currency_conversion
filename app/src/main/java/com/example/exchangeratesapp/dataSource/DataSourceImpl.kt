@@ -17,8 +17,7 @@ class DataSourceImpl(private val service: Repository) : DataSource {
                 codeToNameMap[currency.code] = currency.name
                 ExchangeCurrency(
                     code = currency.code,
-                    name = currency.name,
-                    rate = 0.0
+                    name = currency.name
                 )
             }
         }

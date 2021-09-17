@@ -1,30 +1,40 @@
 package com.example.exchangeratesapp.ui.main
 
-import android.os.Handler
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.exchangeratesapp.common.ConnectionException
 import com.example.exchangeratesapp.common.asObservable
-import com.example.exchangeratesapp.common.observeOnMainThread
-import com.example.exchangeratesapp.dataSource.DataSource
 import com.example.exchangeratesapp.models.ExchangeCurrency
+import com.example.exchangeratesapp.ui.main.usecases.CalculateRatesUseCase
+import com.example.exchangeratesapp.ui.main.usecases.FetchDataUseCase
 import com.hadilq.liveevent.LiveEvent
-import io.reactivex.Single
-import io.reactivex.disposables.Disposable
 import java.io.IOException
+import io.reactivex.Completable
+import java.util.concurrent.TimeUnit
 
-class MainViewModel(private val dataSource: DataSource) : ViewModel() {
+private const val defaultCurrency = "USD"
+
+class MainViewModel(
+    private val calculatorUseCase: CalculateRatesUseCase,
+    private val fetchDataUseCase: FetchDataUseCase
+) : ViewModel() {
 
     init {
         obtainCurrencyList()
+        fetchDataUseCase.onFetchStart = { _showLoading.postValue(true) }
+        fetchDataUseCase.onFetchEnd = {
+            Completable.complete()
+                .delay(500, TimeUnit.MILLISECONDS)
+                .doOnComplete { _showLoading.postValue(false) }.subscribe()
+        }
     }
 
-    private val _updateValue: MutableLiveData<String> = MutableLiveData()
-    val updateValue: LiveData<String>
-        get() = _updateValue
-
-    var inputValue: String by "".asObservable(_updateValue::postValue)
+    var inputValue: String by "".asObservable {
+        _currentCurrency.value?.let { currency ->
+            updateList(currency)
+        }
+    }
 
     private val _displayCurrencies: MutableLiveData<List<ExchangeCurrency>> = MutableLiveData()
     val displayCurrencies: LiveData<List<ExchangeCurrency>>
@@ -38,28 +48,22 @@ class MainViewModel(private val dataSource: DataSource) : ViewModel() {
     val showLoading: LiveData<Boolean>
         get() = _showLoading
 
-    private var listDisposable: Disposable? = null
-        set(value) {
-            listDisposable?.dispose()
-            field = value
-        }
-
-    private var ratesDisposable: Disposable? = null
-        set(value) {
-            ratesDisposable?.dispose()
-            field = value
-        }
+    private val _currentCurrency: MutableLiveData<ExchangeCurrency> = MutableLiveData()
+    val currentCurrency: LiveData<ExchangeCurrency>
+        get() = _currentCurrency
 
     private fun obtainCurrencyList() {
-        listDisposable = dataSource
-            .getCurrencyItems()
-            .subscribe(::handleCurrencies) {
-                handleError(it, ::obtainCurrencyList)
-            }
+        fetchDataUseCase.getCurrencyItems(::handleCurrencies) {
+            handleError(it, ::obtainCurrencyList)
+        }
     }
 
-    private fun handleCurrencies(currencies: List<ExchangeCurrency>) =
+    private fun handleCurrencies(currencies: List<ExchangeCurrency>) {
         _displayCurrencies.postValue(currencies)
+        Completable.complete()
+            .delay(1, TimeUnit.SECONDS)
+            .doOnComplete { fetchRates() }.subscribe()
+    }
 
     private fun handleError(error: Throwable, retryAction: () -> Unit) {
         _displayException.postValue(
@@ -71,26 +75,34 @@ class MainViewModel(private val dataSource: DataSource) : ViewModel() {
         )
     }
 
-    fun fetchRates(code: String) {
-        ratesDisposable =
-            dataSource.getExchangeRates(code).withLoading().observeOnMainThread()
-                .subscribe(::handleCurrencies) {
-                    handleError(it) { fetchRates(code) }
-                }
+    private fun handleRatesFetch(rates: List<ExchangeCurrency>) {
+        _displayCurrencies.postValue(rates)
+        _currentCurrency.postValue(rates.first { it.code == defaultCurrency })
+        calculatorUseCase.baseDataList = rates
+    }
+
+    private fun updateList(currency: ExchangeCurrency) =
+        calculatorUseCase(currency, inputValue.toDoubleOrNull() ?: 0.0)?.let {
+            _displayCurrencies.postValue(it)
+        } ?: _displayException.postValue(ConnectionException.RatesNotLoaded {
+            _currentCurrency.postValue(null)
+            fetchRates()
+        })
+
+    fun fetchRates() {
+        fetchDataUseCase.fetchRates(defaultCurrency, ::handleRatesFetch) {
+            handleError(it) { fetchRates() }
+        }
+    }
+
+    fun handleCurrencySelected(currency: ExchangeCurrency) {
+        _currentCurrency.postValue(currency)
+        updateList(currency)
     }
 
     override fun onCleared() {
+        fetchDataUseCase.disposeData()
         super.onCleared()
-        listDisposable?.dispose()
-        ratesDisposable?.dispose()
-    }
-
-    private fun <T> Single<T>.withLoading() = this.doOnSubscribe {
-        _showLoading.postValue(true)
-    }.doFinally {
-        Handler().postDelayed({ //adds a small delay, so the it doesnt hiccups when the call is made too fast
-            _showLoading.postValue(false)
-        }, 200)
     }
 
 }

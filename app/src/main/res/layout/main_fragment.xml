@@ -30,19 +30,44 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-
-            <com.google.android.material.textfield.TextInputLayout
+            <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:padding="5dp">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:layout_width="match_parent"
+                <TextView
+                    style="@style/TextAppearance.AppCompat.Display1"
+                    android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:inputType="numberDecimal"
-                    android:text="@={handler.inputValue}"
-                    android:textAlignment="center" />
+                    android:gravity="center"
+                    android:paddingHorizontal="12dp"
+                    android:fontFamily="monospace"
+                    android:text="@{handler.currentCurrency.code}"
+                    tools:text="USD" />
 
-            </com.google.android.material.textfield.TextInputLayout>
+                <TextView
+                    style="@style/TextAppearance.AppCompat.Display2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="@string/currency_symbol" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:inputType="numberDecimal"
+                        android:text="@={handler.inputValue}"
+                        android:textAlignment="center" />
+
+
+                </com.google.android.material.textfield.TextInputLayout>
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
 
         </androidx.cardview.widget.CardView>
 
@@ -90,11 +115,12 @@
             android:id="@+id/currency_list_recycler"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/card_view_input"
+            app:spanCount="2"
             tools:listitem="@layout/currency_list_item" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

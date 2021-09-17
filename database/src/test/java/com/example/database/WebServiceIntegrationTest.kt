@@ -29,18 +29,10 @@ class WebServiceIntegrationTest : DefaultSynchronousTest() {
     }
 
     @Test
-    fun `returns success if the code entered is valid`() {
-        service.getExchangeRates("USD")
+    fun `returns success to retrieve exchange rates`() {
+        service.getExchangeRates()
             .test()
             .assertNoTimeout()
             .assertValue { it.success }
-    }
-
-    @Test
-    fun `returns error if code entered is invalid`() {
-        service.getExchangeRates("JJBA")
-            .test()
-            .assertNoTimeout()
-            .assertValue { !it.success }
     }
 }

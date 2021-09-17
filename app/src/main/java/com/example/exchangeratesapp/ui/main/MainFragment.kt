@@ -6,7 +6,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.exchangeratesapp.common.ConnectionException
 import com.example.exchangeratesapp.common.observe
 import com.example.exchangeratesapp.common.showSnackbar
@@ -16,23 +15,26 @@ import com.example.exchangeratesapp.ui.main.recyclerAdapter.MainRecyclerAdapter
 class MainFragment : Fragment() {
 
     private val mainViewModel: MainViewModel by viewModel()
-    private val adapter =
-        MainRecyclerAdapter { mainViewModel.fetchRates(it) }.apply {
-            setHasStableIds(true)
-        }
+    private var adapter: MainRecyclerAdapter? = null
+
+    private var binding: MainFragmentBinding? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? =
+    ): View =
         MainFragmentBinding.inflate(inflater).apply {
             lifecycleOwner = viewLifecycleOwner
+            binding = this
             handler = mainViewModel
 
+            adapter = MainRecyclerAdapter(mainViewModel::handleCurrencySelected).apply {
+                setHasStableIds(true)
+            }
+
             currencyListRecycler.adapter = adapter
-            currencyListRecycler.layoutManager =
-                StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+
         }.root
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -41,9 +43,8 @@ class MainFragment : Fragment() {
     }
 
     private fun observeData() = with(mainViewModel) {
-        observe(displayCurrencies) { adapter.currencyItem = it }
+        observe(displayCurrencies) { adapter?.currencyItemList = it }
         observe(displayException, ::displayExceptionSnackbar)
-        observe(updateValue) { adapter.inputValue = if (it.isNotBlank()) it.toDouble() else 0.0 }
     }
 
     private fun displayExceptionSnackbar(exception: ConnectionException) {
@@ -51,6 +52,12 @@ class MainFragment : Fragment() {
             text = exception.message,
             onRetry = exception.retry
         )
+    }
+
+    override fun onDestroy() {
+        binding?.currencyListRecycler?.adapter = null
+        binding = null
+        super.onDestroy()
     }
 
     companion object {

@@ -8,22 +8,20 @@ import com.example.exchangeratesapp.databinding.CurrencyListItemBinding
 import com.example.exchangeratesapp.models.ExchangeCurrency
 
 class MainRecyclerAdapter(
-    private val onClickListener: (code: String) -> Unit
+    private val onClickListener: (code: ExchangeCurrency) -> Unit
 ) : RecyclerView.Adapter<MainRecyclerViewHolder>() {
 
-    var currencyItem: List<ExchangeCurrency> = listOf()
-        set(value) {
-            field = value
-            notifyDataSetChanged()
-        }
-
-    var inputValue: Double = 0.0
+    var currencyItemList: List<ExchangeCurrency> = listOf()
         set(value) {
             field = value
             notifyDataSetChanged()
         }
 
     private var selectedCode: String = ""
+    set(value) {
+        field = value
+        notifyDataSetChanged()
+    }
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -37,19 +35,19 @@ class MainRecyclerAdapter(
             )
         )
 
-    override fun getItemCount(): Int = currencyItem.count()
+    override fun getItemCount(): Int = currencyItemList.count()
 
-    override fun getItemId(position: Int): Long = currencyItem[position].code
+    override fun getItemId(position: Int): Long = currencyItemList[position].code
         .toCharArray()
         .reduce { acc, char -> acc + char.toInt() }
         .toLong()
 
     override fun onBindViewHolder(holder: MainRecyclerViewHolder, position: Int) {
-        val exchangeCurrency = currencyItem[position]
-        holder.bindItem(exchangeCurrency, inputValue, selectedCode == exchangeCurrency.code)
+        val exchangeCurrency = currencyItemList[position]
+        holder.bindItem(exchangeCurrency, selectedCode == exchangeCurrency.code)
         holder.itemView.onClicked {
             selectedCode = exchangeCurrency.code
-            onClickListener(exchangeCurrency.code)
+            onClickListener(exchangeCurrency)
         }
     }
 }

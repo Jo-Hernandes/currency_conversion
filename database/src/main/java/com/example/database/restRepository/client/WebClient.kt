@@ -20,8 +20,8 @@ class WebClient {
                 request.url.newBuilder()
                     .addQueryParameter(name = "access_key", value = BuildConfig.ACCESS_KEY)
                     .build()
-            request = request.newBuilder().url(url).build()
-            return chain.proceed(request)
+            val newRequest = request.newBuilder().url(url).build()
+            return chain.proceed(newRequest)
         }
     }
 

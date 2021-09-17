@@ -5,4 +5,6 @@
     <string name="offline_exception">Offline network. Try again later</string>
     <string name="no_host">Could not resolve host</string>
     <string name="loading">Loading...</string>
+    <string name="currency_symbol">$</string>
+    <string name="no_rates">No rates loaded. Reload them and try again</string>
 </resources>

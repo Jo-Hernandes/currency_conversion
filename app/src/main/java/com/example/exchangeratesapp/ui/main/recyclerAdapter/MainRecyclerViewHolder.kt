@@ -7,10 +7,9 @@ import com.example.exchangeratesapp.models.ExchangeCurrency
 class MainRecyclerViewHolder(private val holderBinding: CurrencyListItemBinding) :
     RecyclerView.ViewHolder(holderBinding.root) {
 
-    fun bindItem(currency: ExchangeCurrency, inputValue: Double, isSelected: Boolean) =
+    fun bindItem(currency: ExchangeCurrency, isSelected: Boolean) =
         with(holderBinding) {
             this.currency = currency
-            this.inputValue = inputValue
             this.isSelected = isSelected
         }
 }

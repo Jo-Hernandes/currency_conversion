@@ -26,16 +26,16 @@ class CurrencyLayerRepository(private val context: Context) : Repository {
             .flatMap {
                 val lastSave = Date(it.timestamp)
                 when {
-                    Date().before(lastSave.addTime(Calendar.MINUTE, 30)) -> cache.getCachedRates(
-                        currencyCode
-                    )
-                    else -> getRatesFromService(currencyCode)
+                    Date().before(
+                        lastSave.addTime(Calendar.MINUTE, 30)
+                    ) -> cache.getCachedRates(currencyCode)
+                    else -> getRatesFromService()
                 }
             }
     }
 
-    private fun getRatesFromService(currencyCode: String): Single<List<ExchangeRate>> =
-        restService.getExchangeRates(currencyCode)
+    private fun getRatesFromService(): Single<List<ExchangeRate>> =
+        restService.getExchangeRates()
             .doOnSuccess {
                 val cache = PersistenceRepository(context)
                 cache.persistData(it)

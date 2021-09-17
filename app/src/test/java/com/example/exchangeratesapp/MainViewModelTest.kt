@@ -22,22 +22,22 @@ class MainViewModelTest : DefaultSynchronousTest() {
     @RelaxedMockK
     private lateinit var dataSource: DataSource
 
-    private lateinit var handler : MainViewModel
+    private lateinit var handler: MainViewModel
 
     @Before
-    fun `setup handler`(){
+    fun `setup handler`() {
         MockKAnnotations.init(this)
         handler = MainViewModel(dataSource)
     }
 
     // Single<List<ExchangeCurrency>>
     @Test
-    fun `uses datasource to fetch rates`(){
+    fun `uses datasource to fetch rates`() {
         //given
         every { dataSource.getExchangeRates(any()) } returns Single.just(listOf())
 
         //when
-        handler.fetchRates("")
+        handler.fetchRates()
 
         //then
         verify {
@@ -46,7 +46,7 @@ class MainViewModelTest : DefaultSynchronousTest() {
     }
 
     @Test
-    fun `updates livedata when exchange list is retrieved`(){
+    fun `updates livedata when exchange list is retrieved`() {
         //given
         val liveDataObserver = handler.displayCurrencies.testObserver
         val errorObserver = handler.displayException.testObserver
@@ -55,7 +55,7 @@ class MainViewModelTest : DefaultSynchronousTest() {
         every { dataSource.getExchangeRates(any()) } returns Single.just(currentExchangeList)
 
         //when
-        handler.fetchRates("")
+        handler.fetchRates()
 
         //then
         verify {
@@ -65,7 +65,7 @@ class MainViewModelTest : DefaultSynchronousTest() {
     }
 
     @Test
-    fun `handles error correctly based on webservice response`(){
+    fun `handles error correctly based on webservice response`() {
         //given
         val liveDataObserver = handler.displayCurrencies.testObserver
         val errorObserver = handler.displayException.testObserver
@@ -73,7 +73,7 @@ class MainViewModelTest : DefaultSynchronousTest() {
         every { dataSource.getExchangeRates(any()) } returns Single.error(IOException())
 
         //when
-        handler.fetchRates("")
+        handler.fetchRates()
 
         //then
         verify {
@@ -83,20 +83,26 @@ class MainViewModelTest : DefaultSynchronousTest() {
     }
 
     @Test
-    fun `updates livedata as input field changes`(){
+    fun `throws exception as input field changes with selected currency but no item on list`() {
         //given
-        val currentText = "jjba"
-        val liveDataObserver = handler.updateValue.testObserver
+        val currentText = "1.0"
+        val liveDataObserver = handler.displayException.testObserver
+        handler.handleCurrencySelected(
+            ExchangeCurrency(
+                code = "USD",
+                name = "Test Dollar",
+                rate = 1.0
+            )
+        )
 
         //when
         handler.inputValue = currentText
 
         //then
         verify {
-            liveDataObserver.onChanged(currentText)
+            liveDataObserver.onChanged(any())
         }
     }
-
 }
 
 val <T> LiveData<T>.testObserver get() = mockk<Observer<T>>(relaxed = true).also(this::observeForever)

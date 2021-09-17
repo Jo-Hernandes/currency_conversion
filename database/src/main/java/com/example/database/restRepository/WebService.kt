@@ -12,8 +12,6 @@ interface WebService {
     fun getCurrencyList(): Single<CurrencyListResponse>
 
     @GET("live")
-    fun getExchangeRates(
-        @Query("source") source: String
-    ): Single<ExchangeRateResponse>
+    fun getExchangeRates(): Single<ExchangeRateResponse>
 
 }

@@ -19,6 +19,8 @@ class PersistenceRepository(private val context: Context) {
 
     fun persistData(exchangeResponse: ExchangeRateResponse) {
         val cachedDatabase = CachedDatabase.getInstance(context)
+        cachedDatabase.clearAllTables()
+
         cachedDatabase.getExchangesDao().insertData(
             CachedExchangeCode(
                 timestamp = Date().time,

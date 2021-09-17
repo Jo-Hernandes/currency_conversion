@@ -4,9 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <variable
-            name="inputValue"
-            type="Double" />
 
         <variable
             name="isSelected"
@@ -22,6 +19,9 @@
         android:layout_width="match_parent"
         android:layout_height="170dp"
         android:layout_margin="5dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?android:attr/selectableItemBackground"
         app:cardBackgroundColor="@{isSelected ? @android:color/holo_red_dark : @android:color/white}"
         app:cardCornerRadius="5dp"
         app:cardPreventCornerOverlap="true"
@@ -50,13 +50,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@{`Rate: ` + currency.rate}"
-                tools:text="Rate: 1.02" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@{`Total: ` + (currency.rate * inputValue)}"
+                android:text="@{`Total: ` + currency.totalRate}"
                 tools:text="Total: 1.02" />
 
         </LinearLayout>

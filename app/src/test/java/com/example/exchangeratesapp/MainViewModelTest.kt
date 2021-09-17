@@ -2,15 +2,14 @@ package com.example.exchangeratesapp
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
-import com.example.exchangeratesapp.dataSource.DataSource
 import com.example.exchangeratesapp.models.ExchangeCurrency
 import com.example.exchangeratesapp.ui.main.MainViewModel
+import com.example.exchangeratesapp.ui.main.usecases.CalculateRatesUseCase
+import com.example.exchangeratesapp.ui.main.usecases.FetchDataUseCase
 import io.mockk.*
 import io.mockk.impl.annotations.RelaxedMockK
-import io.reactivex.Single
 import org.junit.Test
 import org.junit.Before
-import java.io.IOException
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -20,67 +19,46 @@ import java.io.IOException
 class MainViewModelTest : DefaultSynchronousTest() {
 
     @RelaxedMockK
-    private lateinit var dataSource: DataSource
+    private lateinit var fetchDataUseCase: FetchDataUseCase
+
+    @RelaxedMockK
+    private lateinit var calculateRatesUseCase: CalculateRatesUseCase
 
     private lateinit var handler: MainViewModel
 
     @Before
     fun `setup handler`() {
         MockKAnnotations.init(this)
-        handler = MainViewModel(dataSource)
+        handler = MainViewModel(calculateRatesUseCase, fetchDataUseCase)
     }
 
     // Single<List<ExchangeCurrency>>
     @Test
     fun `uses datasource to fetch rates`() {
-        //given
-        every { dataSource.getExchangeRates(any()) } returns Single.just(listOf())
-
         //when
         handler.fetchRates()
 
         //then
         verify {
-            dataSource.getExchangeRates(any())
+            fetchDataUseCase.getCurrencyItems(any(), any())
         }
     }
 
     @Test
     fun `updates livedata when exchange list is retrieved`() {
         //given
-        val liveDataObserver = handler.displayCurrencies.testObserver
         val errorObserver = handler.displayException.testObserver
-
-        val currentExchangeList = listOf<ExchangeCurrency>()
-        every { dataSource.getExchangeRates(any()) } returns Single.just(currentExchangeList)
 
         //when
         handler.fetchRates()
 
         //then
         verify {
-            liveDataObserver.onChanged(currentExchangeList)
+            fetchDataUseCase.fetchRates(any(), any(), any())
             errorObserver wasNot called
         }
     }
 
-    @Test
-    fun `handles error correctly based on webservice response`() {
-        //given
-        val liveDataObserver = handler.displayCurrencies.testObserver
-        val errorObserver = handler.displayException.testObserver
-
-        every { dataSource.getExchangeRates(any()) } returns Single.error(IOException())
-
-        //when
-        handler.fetchRates()
-
-        //then
-        verify {
-            liveDataObserver wasNot called
-            errorObserver.onChanged(any())
-        }
-    }
 
     @Test
     fun `throws exception as input field changes with selected currency but no item on list`() {

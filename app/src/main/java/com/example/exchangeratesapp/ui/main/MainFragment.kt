@@ -15,9 +15,9 @@ import com.example.exchangeratesapp.ui.main.recyclerAdapter.MainRecyclerAdapter
 class MainFragment : Fragment() {
 
     private val mainViewModel: MainViewModel by viewModel()
-    private var adapter: MainRecyclerAdapter? = null
-
     private var binding: MainFragmentBinding? = null
+    
+    private var adapter: MainRecyclerAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,7 +34,6 @@ class MainFragment : Fragment() {
             }
 
             currencyListRecycler.adapter = adapter
-
         }.root
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -45,6 +44,7 @@ class MainFragment : Fragment() {
     private fun observeData() = with(mainViewModel) {
         observe(displayCurrencies) { adapter?.currencyItemList = it }
         observe(displayException, ::displayExceptionSnackbar)
+        observe(currentCurrency) { adapter?.selectedCurrency = it }
     }
 
     private fun displayExceptionSnackbar(exception: ConnectionException) {

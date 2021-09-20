@@ -10,6 +10,6 @@ class CalculateRatesUseCase {
         baseExchange: ExchangeCurrency,
         currentValue: Double
     ): List<ExchangeCurrency>? = baseDataList?.map {
-        it.copy(totalRate = String.format("%.3f", (it.rate / baseExchange.rate) * currentValue))
+        it.copy(totalRate = String.format("%.2f", (it.rate / baseExchange.rate) * currentValue))
     }
 }

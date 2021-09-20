@@ -11,11 +11,7 @@ import io.mockk.impl.annotations.RelaxedMockK
 import org.junit.Test
 import org.junit.Before
 
-/**
- * Example local unit test, which will execute on the development machine (host).
- *
- * See [testing documentation](http://d.android.com/tools/testing).
- */
+
 class MainViewModelTest : DefaultSynchronousTest() {
 
     @RelaxedMockK
@@ -64,7 +60,11 @@ class MainViewModelTest : DefaultSynchronousTest() {
     fun `throws exception as input field changes with selected currency but no item on list`() {
         //given
         val currentText = "1.0"
-        val liveDataObserver = handler.displayException.testObserver
+        every { calculateRatesUseCase.invoke(any() as ExchangeCurrency, any()) } returns null
+
+        val liveDataObserver = handler.displayCurrencies.testObserver
+        val errorObserver = handler.displayException.testObserver
+
         handler.handleCurrencySelected(
             ExchangeCurrency(
                 code = "USD",
@@ -78,7 +78,8 @@ class MainViewModelTest : DefaultSynchronousTest() {
 
         //then
         verify {
-            liveDataObserver.onChanged(any())
+            (liveDataObserver wasNot called)
+            errorObserver.onChanged(any())
         }
     }
 }

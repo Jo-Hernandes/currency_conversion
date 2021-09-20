@@ -20,15 +20,6 @@ class MainViewModel(
     private val fetchDataUseCase: FetchDataUseCase
 ) : ViewModel() {
 
-    init {
-        obtainCurrencyList()
-        fetchDataUseCase.onFetchStart = { _showLoading.postValue(true) }
-        fetchDataUseCase.onFetchEnd = {
-            Completable.complete()
-                .delay(500, TimeUnit.MILLISECONDS)
-                .doOnComplete { _showLoading.postValue(false) }.subscribe()
-        }
-    }
 
     var inputValue: String by "".asObservable {
         _currentCurrency.value?.let { currency ->
@@ -51,6 +42,17 @@ class MainViewModel(
     private val _currentCurrency: MutableLiveData<ExchangeCurrency> = MutableLiveData()
     val currentCurrency: LiveData<ExchangeCurrency>
         get() = _currentCurrency
+
+    init {
+        fetchDataUseCase.onFetchStart = { _showLoading.postValue(true) }
+        fetchDataUseCase.onFetchEnd = {
+            Completable.complete()
+                .delay(500, TimeUnit.MILLISECONDS)
+                .doOnComplete { _showLoading.postValue(false) }.subscribe()
+        }
+
+        obtainCurrencyList()
+    }
 
     private fun obtainCurrencyList() {
         fetchDataUseCase.getCurrencyItems(::handleCurrencies) {

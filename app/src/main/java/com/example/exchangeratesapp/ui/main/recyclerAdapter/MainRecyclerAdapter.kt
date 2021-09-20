@@ -17,7 +17,7 @@ class MainRecyclerAdapter(
             notifyDataSetChanged()
         }
 
-    private var selectedCode: String = ""
+    var selectedCurrency: ExchangeCurrency? = null
     set(value) {
         field = value
         notifyDataSetChanged()
@@ -44,9 +44,8 @@ class MainRecyclerAdapter(
 
     override fun onBindViewHolder(holder: MainRecyclerViewHolder, position: Int) {
         val exchangeCurrency = currencyItemList[position]
-        holder.bindItem(exchangeCurrency, selectedCode == exchangeCurrency.code)
+        holder.bindItem(exchangeCurrency, selectedCurrency?.code == exchangeCurrency.code)
         holder.itemView.onClicked {
-            selectedCode = exchangeCurrency.code
             onClickListener(exchangeCurrency)
         }
     }

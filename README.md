@@ -15,6 +15,8 @@ To get the rates for the other currencies, it was needed to make a calculation, 
 
 Based on the requirements, it was understood that the rates should be persisted locally to limit band usage, but it doesn't mean the app should work without internet. So, both the call for the available exchanges and exchange rates have no fallback for no internet available, throwing an error on the screen in the form of a snackbar including a retry button. 
 
+Also, please note that was needed to add a delay between the currency list and currency ratios call. Since we got to use the free plan for the API, it returns error if they are two calls too close to the each other.
+
 For the exchange rates, it is being cached on the system using [Room](https://developer.android.com/jetpack/androidx/releases/room?gclid=EAIaIQobChMIxf3064KQ8wIVwYORCh3bYgC8EAAYASAAEgL25fD_BwE&gclsrc=aw.ds). Based on it's current timestamp it checks if is needed to reload the cached data, retrieving from API or use the current one in cache.
 
 

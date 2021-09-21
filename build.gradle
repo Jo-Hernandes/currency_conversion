@@ -33,6 +33,6 @@ ext {
     koin_version = '3.1.2'
     architecture_version = '2.1.0'
     lifecycle_version = '2.3.1'
-    rxjava_version = '2.2.19'
-    mockk_version = '1.10.0'
+    rxjava_version = '2.2.21'
+    mockk_version = '1.12.0'
 }

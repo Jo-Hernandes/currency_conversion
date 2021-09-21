@@ -12,16 +12,16 @@ import com.example.database.restRepository.client.WebClient
 import io.reactivex.Single
 import java.util.*
 
-class CurrencyLayerRepository(private val context: Context) : Repository {
+class CurrencyLayerRepository(context: Context) : Repository {
 
-    private val restService by lazy { RestServiceImpl(WebClient()).provideWebService() }
+    private val restService = RestServiceImpl(WebClient()).provideWebService()
+    private val cache = PersistenceRepository(context)
 
     override fun fetchAvailableCurrencies(): Single<List<CurrencyItem>> =
         restService.getCurrencyList()
             .map { it.toCurrencyList() }
 
     override fun fetchRates(currencyCode: String): Single<List<ExchangeRate>> {
-        val cache = PersistenceRepository(context)
         return cache.getCachedExchange(currencyCode)
             .flatMap {
                 val lastSave = Date(it.timestamp)
@@ -37,7 +37,6 @@ class CurrencyLayerRepository(private val context: Context) : Repository {
     private fun getRatesFromService(): Single<List<ExchangeRate>> =
         restService.getExchangeRates()
             .doOnSuccess {
-                val cache = PersistenceRepository(context)
                 cache.persistData(it)
             }
             .map { it.toExchangeList() }

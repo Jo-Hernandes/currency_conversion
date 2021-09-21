@@ -31,11 +31,12 @@ class FetchDataUseCase(private val dataSource: DataSource) {
         onSuccess: (List<ExchangeCurrency>) -> Unit,
         onError: (Throwable) -> Unit
     ) {
-        listDisposable = dataSource
-            .getCurrencyItems()
-            .doOnSubscribe(onFetchStart)
-            .doOnFinally(onFetchEnd)
-            .subscribe(onSuccess, onError)
+        listDisposable =
+            dataSource
+                .getCurrencyItems()
+                .doOnSubscribe(onFetchStart)
+                .doOnFinally(onFetchEnd)
+                .subscribe(onSuccess, onError)
     }
 
     fun fetchRates(

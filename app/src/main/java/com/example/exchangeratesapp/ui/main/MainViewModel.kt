@@ -13,7 +13,10 @@ import java.io.IOException
 import io.reactivex.Completable
 import java.util.concurrent.TimeUnit
 
-private const val defaultCurrency = "USD"
+private val defaultCurrency = ExchangeCurrency(
+    code = "USD",
+    name = "Default Dollar",
+)
 
 class MainViewModel(
     private val calculatorUseCase: CalculateRatesUseCase,
@@ -39,7 +42,8 @@ class MainViewModel(
     val showLoading: LiveData<Boolean>
         get() = _showLoading
 
-    private val _currentCurrency: MutableLiveData<ExchangeCurrency> = MutableLiveData()
+    private val _currentCurrency: MutableLiveData<ExchangeCurrency> =
+        MutableLiveData(defaultCurrency)
     val currentCurrency: LiveData<ExchangeCurrency>
         get() = _currentCurrency
 
@@ -79,7 +83,7 @@ class MainViewModel(
 
     private fun handleRatesFetch(rates: List<ExchangeCurrency>) {
         _displayCurrencies.postValue(rates)
-        _currentCurrency.postValue(rates.first { it.code == defaultCurrency })
+        _currentCurrency.postValue(rates.first { it.code == _currentCurrency.value?.code })
         calculatorUseCase.baseDataList = rates
     }
 
@@ -87,12 +91,12 @@ class MainViewModel(
         calculatorUseCase(currency, inputValue.toDoubleOrNull() ?: 0.0)?.let {
             _displayCurrencies.postValue(it)
         } ?: _displayException.postValue(ConnectionException.RatesNotLoaded {
-            _currentCurrency.postValue(null)
             fetchRates()
+            _currentCurrency.postValue(currency)
         })
 
     fun fetchRates() {
-        fetchDataUseCase.fetchRates(defaultCurrency, ::handleRatesFetch) {
+        fetchDataUseCase.fetchRates(defaultCurrency.code, ::handleRatesFetch) {
             handleError(it) { fetchRates() }
         }
     }

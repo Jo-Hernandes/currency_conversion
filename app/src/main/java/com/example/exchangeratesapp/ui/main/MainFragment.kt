@@ -36,8 +36,9 @@ class MainFragment : Fragment() {
             currencyListRecycler.adapter = adapter
         }.root
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+
+    override fun onStart() {
+        super.onStart()
         observeData()
     }
 

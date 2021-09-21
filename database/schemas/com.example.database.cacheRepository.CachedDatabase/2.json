@@ -1,0 +1,78 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 2,
+    "identityHash": "fe6610ac35fdb1795bfc993aa2b32181",
+    "entities": [
+      {
+        "tableName": "cachedExchange",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`date_timestamp` INTEGER NOT NULL, `exchange_code` TEXT NOT NULL, PRIMARY KEY(`exchange_code`))",
+        "fields": [
+          {
+            "fieldPath": "timestamp",
+            "columnName": "date_timestamp",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "code",
+            "columnName": "exchange_code",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "exchange_code"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "cachedRate",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`source_code` TEXT NOT NULL, `exchange_code` TEXT NOT NULL, `rate` REAL NOT NULL, `timestamp` REAL NOT NULL, PRIMARY KEY(`timestamp`))",
+        "fields": [
+          {
+            "fieldPath": "sourceCode",
+            "columnName": "source_code",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "exchangeCode",
+            "columnName": "exchange_code",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "rate",
+            "columnName": "rate",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "timestamp",
+            "columnName": "timestamp",
+            "affinity": "REAL",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "timestamp"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'fe6610ac35fdb1795bfc993aa2b32181')"
+    ]
+  }
+}

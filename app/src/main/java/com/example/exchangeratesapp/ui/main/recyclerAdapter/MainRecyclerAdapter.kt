@@ -18,10 +18,10 @@ class MainRecyclerAdapter(
         }
 
     var selectedCurrency: ExchangeCurrency? = null
-    set(value) {
-        field = value
-        notifyDataSetChanged()
-    }
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -39,7 +39,8 @@ class MainRecyclerAdapter(
 
     override fun getItemId(position: Int): Long = currencyItemList[position].code
         .toCharArray()
-        .reduce { acc, char -> acc + char.toInt() }
+        .map { it.code }
+        .reduce { acc, char -> acc + char }
         .toLong()
 
     override fun onBindViewHolder(holder: MainRecyclerViewHolder, position: Int) {

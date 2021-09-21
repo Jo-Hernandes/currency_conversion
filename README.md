@@ -35,10 +35,10 @@ The integrations between the modules and it's objects was developed using the de
 It is my tested and true REST library. I don't think there is much talk needed about that, based on it's popularity. Is my library of choice for api calls mostly because it is the one I am most confortable with and it's integration with rxJava/rxAndroid and GSON.
 
 ### RxJava
-This extremely powerfull library has a great integration with Retrofit and serves me the purpose of making the development easier because of it's functional programming characteristics.
+This extremely powerful library has a great integration with Retrofit and serves me the purpose of making the development easier because of it's functional programming characteristics.
 
 ### Room
-I believe that there are more powerfull persinstence databases, like REALM, for example, but I didn't see the need of that in the project application. It's easy development and lightweight characteristics was enough to justify the use of Room as the go to tool for simple data persistence and caching.
+I believe that there are more powerful persistence databases, like REALM, for example, but I didn't see the need of that in the project application. It's easy development and lightweight characteristics was enough to justify the use of Room as the go to tool for simple data persistence and caching.
 
 ### Koin
 A dependency injection that is a lot simpler than DAGGER. While being lightweight, it also conforms better with Kotlin.

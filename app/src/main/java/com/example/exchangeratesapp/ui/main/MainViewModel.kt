@@ -67,7 +67,7 @@ class MainViewModel(
     private fun handleCurrencies(currencies: List<ExchangeCurrency>) {
         _displayCurrencies.postValue(currencies)
         Completable.complete()
-            .delay(1, TimeUnit.SECONDS)
+            .delay(2, TimeUnit.SECONDS)
             .doOnComplete { fetchRates() }.subscribe()
     }
 
